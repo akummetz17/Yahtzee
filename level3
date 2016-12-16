@@ -1,0 +1,192 @@
+import java.util.Scanner;
+
+public class YahtzeeGame
+{
+	YahtzeeDie dice1;
+	YahtzeeDie dice2;
+	YahtzeeDie dice3;
+	YahtzeeDie dice4;
+	YahtzeeDie dice5;
+	YahtzeeScorecard scoreBoard;
+	public static final int NUM_SIDES= 6;
+	int turnCounter= 0;
+	Scanner s= new Scanner(System.in);
+	char yn= 's';
+	boolean freeze1= false;
+	boolean freeze2= false;
+	boolean freeze3= false;
+	boolean freeze4= false;
+	boolean freeze5= false;
+
+	/* instance data should include the five yahtzee dice, a scoreboard, and a CONSTANT (static final) variable NUM_SIDES
+	which should be set to six (the number of sides on a yahtzee die) */
+
+
+	/* initializes the dice and scoreboard */
+	public YahtzeeGame()
+	{
+		scoreBoard = new YahtzeeScorecard();
+		dice1= new YahtzeeDie(6);
+		dice2= new YahtzeeDie(6);
+		dice3= new YahtzeeDie(6);
+		dice4= new YahtzeeDie(6);
+		dice5= new YahtzeeDie(6);
+
+
+	}
+
+	/* check to see if the game is over, and while the game is not over call the method takeTurn()
+	once the game ends (hint: there are 13 turns in a game of Yahtzee), the method should print a
+	final scorecard and return the grand total */
+	public int playGame()
+	{
+
+		if(turnCounter>=13) {
+			takeTurn();
+		}
+		turnCounter++;
+		scoreBoard.printScoreCard();
+		return scoreBoard.getGrandTotal();
+	}
+
+	/* 	1. call rollDice()
+		2. call printDice()
+		3. Ask the user if they are satisfied with their roll, or if they would like to roll again.
+		   If they are not satisfied continue, otherwise call markScore()
+		4. call chooseFrozen()
+		5. call rollDice()
+		6. call printDice()
+		7. Ask the user if they are satisfied with their roll, or if they would like to roll again.
+		   If they are not satisfied continue, otherwise call markScore()
+		8. call chooseFrozen()
+		9. call rollDice()
+		10. call printDice()
+		11. call markScore()
+	*/
+	private void takeTurn()
+	{
+		char sat= '1';
+		rollDice();
+		printDice();
+		System.out.println("Are you (s)satisfied or would you like to (r)roll again?");
+		sat= s.nextLine().charAt(0);
+		if(sat!=yn) {
+			chooseFrozen();
+			rollDice();
+			printDice();
+			System.out.println("Are you (s)satisfied or would you like to (r)roll again?");
+			sat = s.nextLine().charAt(0);
+			if (sat != yn){
+				chooseFrozen();
+				rollDice();
+				printDice();
+			}
+		}
+
+		markScore();
+
+	}
+
+	/* Rolls all unfrozen dice.  Also resets all dice to the unfrozen state after the roll */
+	private void rollDice()
+	{
+		if (freeze1==false){dice1.rollDie();}
+		if (freeze2==false){dice2.rollDie();}
+		if (freeze3==false){dice3.rollDie();}
+		if (freeze4==false){dice4.rollDie();}
+		if (freeze5==false){dice5.rollDie();}
+		freeze1=false;
+		freeze2=false;
+		freeze3=false;
+		freeze4=false;
+		freeze5=false;
+
+
+	}
+
+	/* Asks the user which dice should be frozen 1-5 (should be read in in one line) */
+	private void chooseFrozen()
+	{
+		String myString= "";
+		System.out.println("What die would you like to freeze if any?");
+		myString= s.nextLine();
+		freeze1= myString.indexOf('1')>=0;
+		freeze2= myString.indexOf('2')>=0;
+		freeze3= myString.indexOf('3')>=0;
+		freeze4= myString.indexOf('4')>=0;
+		freeze5= myString.indexOf('5')>=0;
+
+
+
+	}
+
+	/* Should print the value of all five dice separated by a tab (\t) to the console */
+	private void printDice()
+	{
+		System.out.println("dice 1: "+dice1+ "\tdice 2: "+ dice2+ "\tdice 3: "+ dice3+ "" +
+				"\tdice 4: "+ dice4+"\tdice 5: "+ dice5);
+	}
+
+	/* 1. Print a scoreboard
+	   2. Ask the user where they would like to mark their score.
+	   3. Call appropriate function
+	   4. If false is returned the user entered an invalid number, so ask the user to try again	*/
+	private void markScore()
+	{
+		scoreBoard.printScoreCard();
+		System.out.println( "where would you like to mark your score?");
+		String a= s.nextLine();
+		boolean isCorrect= false;
+
+		while(!isCorrect) {
+			switch (a) {
+				case "1":
+					isCorrect= scoreBoard.markOnes(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case"2":
+					isCorrect= scoreBoard.markTwos(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "3":
+					isCorrect= scoreBoard.markThrees(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "4":
+					isCorrect= scoreBoard.markFours(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "5":
+					isCorrect= scoreBoard.markFives(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "6":
+					isCorrect= scoreBoard.markSixes(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "7":
+					isCorrect= scoreBoard.markThreeOfAKind(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "8":
+					isCorrect= scoreBoard.markFourOfAKind(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "9":
+					isCorrect= scoreBoard.markFullHouse(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "10":
+					isCorrect= scoreBoard.markSmallStraight(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "11":
+					isCorrect= scoreBoard.markLargeStraight(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "12":
+					isCorrect= scoreBoard.markYahtzee(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+				case "13":
+					isCorrect= scoreBoard.markChance(dice1.getValue(),dice2.getValue(),dice3.getValue(),dice4.getValue(),dice5.getValue());
+					break;
+
+			}
+			if(isCorrect==false){
+				System.out.println("You need to input a new number");
+				a= s.nextLine();
+			}
+		}
+
+		/* your code here */
+	}
+}
